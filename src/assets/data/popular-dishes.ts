@@ -7,14 +7,14 @@ export const popularDishes = [
     description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   },
   {
-    image: '/images/popular-dishes/popular-02.jpg',
+    image: '/images/popular-dishes/popular-03.jpg',
     alt: 'Yaroa',
     name: 'Yaroa',
     type: '',
     description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   },
   {
-    image: '/images/popular-dishes/popular-03.jpg',
+    image: '/images/popular-dishes/popular-02.jpg',
     alt: 'Carne Guisada con Arroz (La Bandera)',
     name: 'Carne Guisada con Arroz (La Bandera)',
     type: '',

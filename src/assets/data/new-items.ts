@@ -8,7 +8,7 @@ export const newItems = [
     blogLink: '#'
   },
   {
-    img: '/images/popular-dishes/popular-02.jpg',
+    img: '/images/popular-dishes/popular-03.jpg',
     alt: 'Spicy Mango Chicken',
     title: 'Spicy Mango Chicken',
     description:
@@ -16,7 +16,7 @@ export const newItems = [
     blogLink: '#'
   },
   {
-    img: '/images/popular-dishes/popular-03.jpg',
+    img: '/images/popular-dishes/popular-02.jpg',
     alt: 'Vegetarian Tempeh Stir Fry',
     title: 'Vegetarian Tempeh Stir Fry',
     description:
