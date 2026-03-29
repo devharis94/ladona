@@ -1,30 +1,30 @@
 export const popularDishes = [
   {
-    image: '/images/popular-dishes/grilled-herb-chicken.webp',
+    image: '/images/popular-dishes/popular-01.jpg',
     alt: 'Pica Pollo',
     name: 'Pica Pollo',
     type: '',
-    description: 'knusprig frittiertes Poulet, serviert mit Pommes, Kochbananen oder Yuca.'
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   },
   {
-    image: '/images/popular-dishes/classic-margherita-pizza.webp',
+    image: '/images/popular-dishes/popular-02.jpg',
     alt: 'Yaroa',
     name: 'Yaroa',
     type: '',
-    description: 'Ein beliebter dominikanischer Streetfood-Klassiker'
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   },
   {
-    image: '/images/popular-dishes/spicy-shrimp-linguine.webp',
+    image: '/images/popular-dishes/popular-03.jpg',
     alt: 'Carne Guisada con Arroz (La Bandera)',
     name: 'Carne Guisada con Arroz (La Bandera)',
     type: '',
-    description: 'Geschmortes Fleisch mit Reis, ein traditionelles Nationalgericht'
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   },
   {
-    image: '/images/popular-dishes/chocolate-lava-cake.webp',
+    image: '/images/popular-dishes/popular-04.jpg',
     alt: 'Sancocho',
     name: 'Sancocho',
     type: '',
-    description: 'herzhafter Eintopf mit Fleisch und Gemüse'
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr,'
   }
 ]

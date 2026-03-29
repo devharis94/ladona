@@ -1,6 +1,6 @@
 export const newItems = [
   {
-    img: '/images/new-items/new-items-01.webp',
+    img: '/images/popular-dishes/popular-01.jpg',
     alt: 'Lemon Herb Grilled Salmon',
     title: 'Lemon Herb Grilled Salmon',
     description:
@@ -8,7 +8,7 @@ export const newItems = [
     blogLink: '#'
   },
   {
-    img: '/images/new-items/new-items-02.webp',
+    img: '/images/popular-dishes/popular-02.jpg',
     alt: 'Spicy Mango Chicken',
     title: 'Spicy Mango Chicken',
     description:
@@ -16,7 +16,7 @@ export const newItems = [
     blogLink: '#'
   },
   {
-    img: '/images/new-items/new-items-03.webp',
+    img: '/images/popular-dishes/popular-03.jpg',
     alt: 'Vegetarian Tempeh Stir Fry',
     title: 'Vegetarian Tempeh Stir Fry',
     description:

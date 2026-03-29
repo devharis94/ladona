@@ -2,23 +2,23 @@ import { Clock8Icon, MapPinIcon, Mail, PhoneIcon } from 'lucide-react'
 
 export const contactInfo = [
   {
-    title: 'Open Hours',
+    title: 'Öffnungszeiten',
     icon: Clock8Icon,
-    description: 'Monday-Friday\n8:00 am to 5:00 pm'
+    description: 'Montag-Freitag\n22.00 - 05:00'
   },
   {
-    title: 'Our Address',
+    title: 'Unsere Adresse',
     icon: MapPinIcon,
-    description: '802 Perston Rd,Maine\n96812, USA'
+    description: 'Luzern, Strass, ORT'
   },
   {
     title: 'Email',
     icon: Mail,
-    description: 'info@seliziakitchen.com'
+    description: 'info@ladona.ch'
   },
   {
-    title: 'Phone',
+    title: 'Tel',
     icon: PhoneIcon,
-    description: '+1 (123) 456-7890'
+    description: '+41 79 123 456 78'
   }
 ]

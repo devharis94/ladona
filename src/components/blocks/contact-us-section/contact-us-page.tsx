@@ -31,7 +31,7 @@ const ContactUs = ({ contactInfo }: { contactInfo: ContactInfo }) => {
 
         <div className='grid items-center gap-12 lg:grid-cols-2'>
           <img
-            src='/images/contact-us-01.webp'
+            src='/images/contact-us-01.jpg'
             alt='Contact illustration'
             className='size-full object-cover max-lg:max-h-70'
           />
