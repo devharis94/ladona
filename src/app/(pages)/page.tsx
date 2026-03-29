@@ -5,6 +5,7 @@ import Testimonials from '@/components/blocks/testimonials-section/testimonials-
 import NewItems from '@/components/blocks/new-items-section/new-items'
 import ContactUs from '@/components/blocks/contact-us-section/contact-us-page'
 import Offers from '@/components/blocks/offers-section/offers-section'
+import ContactForm from '@/components/blocks/contact-form-section/contact-form'
 
 import { menudata } from '@/assets/data/hero'
 import { popularDishes } from '@/assets/data/popular-dishes'
@@ -40,6 +41,7 @@ const Home = () => {
       <NewItems newItems={newItems} />
       <ContactUs contactInfo={contactInfo} />
       <Offers galleryImage={GalleryImage} />
+      <ContactForm />
       {/* Add JSON-LD to your page */}
       <script
         type='application/ld+json'

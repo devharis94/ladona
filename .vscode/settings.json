@@ -41,6 +41,6 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [],
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
 }
