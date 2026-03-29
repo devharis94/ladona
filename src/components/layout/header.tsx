@@ -134,10 +134,10 @@ const Header = ({ navigationData, className }: HeaderProps) => {
             asChild
           >
             <Link
-              href='#contact-us'
+              href='#anfrage'
               onClick={e => {
                 e.preventDefault()
-                scrollToSection('contact-us')
+                scrollToSection('anfrage')
               }}
             >
               Buchen
@@ -149,10 +149,10 @@ const Header = ({ navigationData, className }: HeaderProps) => {
             <TooltipTrigger asChild>
               <Button className='ml-4 rounded-full sm:hidden' asChild>
                 <Link
-                  href='#contact-us'
+                  href='#anfrage'
                   onClick={e => {
                     e.preventDefault()
-                    scrollToSection('contact-us')
+                    scrollToSection('anfrage')
                   }}
                 >
                   Buchen

@@ -120,7 +120,7 @@ const HeroSection = ({ menudata }: { menudata: MenuData[] }) => {
                 asChild
                 className='bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-base'
               >
-                <Link href='#contact-us'>Buchen</Link>
+                <Link href='#anfrage'>Buchen</Link>
               </Button>
             </div>
           </div>

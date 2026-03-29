@@ -9,7 +9,7 @@ export const footerData = [
   },
   {
     title: 'Contact Us',
-    href: '#contact-us'
+    href: '#anfrage'
   },
   {
     title: 'Offers',
