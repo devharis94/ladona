@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { CheckCircleIcon } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { CheckCircleIcon, MapPinIcon, ChevronDownIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,38 +9,38 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { cn } from '@/lib/utils'
 import { DatenschutzDialog } from '@/components/blocks/datenschutz/datenschutz-dialog'
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 type FormData = {
-  // Basics
   name: string
   email: string
-  phone: string
+  phoneCode: string
+  phoneNumber: string
   eventDate: string
   eventLocation: string
   guestCount: string
-  // Event Details
   eventType: string
   eventDuration: string
   menuPreference: string
   budget: string
-  // Logistics
   powerSupply: string
   truckAccess: string
   indoorOutdoor: string
   parking: string
-  // Special Requests
   notes: string
-  // Optional
   file: File | null
   referralSource: string
-  // Privacy
   privacyAccepted: boolean
   newsletterOptIn: boolean
 }
 
+// ─── Initial data ─────────────────────────────────────────────────────────────
+
 const emptyFormData: FormData = {
   name: '',
   email: '',
-  phone: '',
+  phoneCode: '+41',
+  phoneNumber: '',
   eventDate: '',
   eventLocation: '',
   guestCount: '',
@@ -62,7 +62,8 @@ const emptyFormData: FormData = {
 const demoFormData: FormData = {
   name: 'Haris Bjelic',
   email: 'haris.bjelic@outlook.com',
-  phone: '+41 79 123 45 67',
+  phoneCode: '+41',
+  phoneNumber: '79 123 45 67',
   eventDate: '2025-08-15',
   eventLocation: 'Zürich, Altstadthalle',
   guestCount: '80',
@@ -83,16 +84,181 @@ const demoFormData: FormData = {
 
 const initialFormData = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ? demoFormData : emptyFormData
 
+// ─── Style constants ──────────────────────────────────────────────────────────
+
 const labelClass = 'block text-sm font-medium mb-1.5'
-const inputClass =
-  'border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px]'
 const selectClass =
   'border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] cursor-pointer'
 const textareaClass =
   'border-input bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] min-h-28 resize-y'
-
 const sectionHeadingClass = 'text-base font-semibold mb-4 flex items-center gap-2'
 const gridTwoClass = 'grid gap-4 sm:grid-cols-2'
+
+// ─── Country codes ────────────────────────────────────────────────────────────
+
+const COUNTRY_CODES = [
+  { flag: '🇨🇭', code: '+41', label: 'CH' },
+  { flag: '🇩🇪', code: '+49', label: 'DE' },
+  { flag: '🇦🇹', code: '+43', label: 'AT' },
+  { flag: '🇱🇮', code: '+423', label: 'LI' },
+  { flag: '🇫🇷', code: '+33', label: 'FR' },
+  { flag: '🇮🇹', code: '+39', label: 'IT' },
+  { flag: '🇬🇧', code: '+44', label: 'GB' },
+  { flag: '🇺🇸', code: '+1', label: 'US' },
+  { flag: '🇳🇱', code: '+31', label: 'NL' },
+  { flag: '🇧🇪', code: '+32', label: 'BE' },
+  { flag: '🇪🇸', code: '+34', label: 'ES' },
+  { flag: '🇵🇱', code: '+48', label: 'PL' },
+  { flag: '🇵🇹', code: '+351', label: 'PT' },
+  { flag: '🇹🇷', code: '+90', label: 'TR' },
+]
+
+// ─── PhoneInput ───────────────────────────────────────────────────────────────
+
+type PhoneInputProps = {
+  code: string
+  number: string
+  onCodeChange: (v: string) => void
+  onNumberChange: (v: string) => void
+  error?: string
+}
+
+function PhoneInput({ code, number, onCodeChange, onNumberChange, error }: PhoneInputProps) {
+  return (
+    <div>
+      <label className={labelClass} htmlFor='phoneNumber'>
+        Telefonnummer <span className='text-destructive'>*</span>
+      </label>
+      <div className='flex gap-2'>
+        <div className='relative w-28 shrink-0'>
+          <select
+            value={code}
+            onChange={e => onCodeChange(e.target.value)}
+            className={cn(
+              'border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full appearance-none rounded-md border pl-2 pr-6 text-sm shadow-xs outline-none focus-visible:ring-[3px] cursor-pointer',
+              error && 'border-destructive'
+            )}
+          >
+            {COUNTRY_CODES.map(c => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.code}
+              </option>
+            ))}
+          </select>
+          <ChevronDownIcon className='text-muted-foreground pointer-events-none absolute top-2.5 right-1.5 size-3.5' />
+        </div>
+        <Input
+          id='phoneNumber'
+          type='tel'
+          placeholder='79 123 45 67'
+          value={number}
+          onChange={e => onNumberChange(e.target.value)}
+          aria-invalid={!!error}
+          className='flex-1'
+        />
+      </div>
+      {error && <p className='text-destructive mt-1 text-xs'>{error}</p>}
+    </div>
+  )
+}
+
+// ─── AddressAutocomplete ──────────────────────────────────────────────────────
+
+type NominatimResult = { place_id: number; display_name: string }
+
+type AddressAutocompleteProps = {
+  value: string
+  onChange: (v: string) => void
+  error?: string
+}
+
+function AddressAutocomplete({ value, onChange, error }: AddressAutocompleteProps) {
+  const [query, setQuery] = useState(value)
+  const [results, setResults] = useState<NominatimResult[]>([])
+  const [open, setOpen] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Sync external value resets (e.g. form reset)
+  useEffect(() => {
+    setQuery(value)
+  }, [value])
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleChange = (val: string) => {
+    setQuery(val)
+    onChange(val)
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (val.length < 3) { setResults([]); setOpen(false); return }
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=6&addressdetails=0`,
+          { headers: { 'Accept-Language': 'de' } }
+        )
+        const data: NominatimResult[] = await res.json()
+        setResults(data)
+        setOpen(data.length > 0)
+      } catch {
+        setResults([])
+      }
+    }, 450)
+  }
+
+  const handleSelect = (display: string) => {
+    setQuery(display)
+    onChange(display)
+    setResults([])
+    setOpen(false)
+  }
+
+  return (
+    <div ref={containerRef} className='relative'>
+      <label className={labelClass} htmlFor='eventLocation'>
+        Ort der Veranstaltung <span className='text-destructive'>*</span>
+      </label>
+      <div className='relative'>
+        <MapPinIcon className='text-muted-foreground absolute top-2.5 left-2.5 size-4 pointer-events-none' />
+        <Input
+          id='eventLocation'
+          placeholder='Adresse oder Ort suchen…'
+          value={query}
+          onChange={e => handleChange(e.target.value)}
+          aria-invalid={!!error}
+          className='pl-8'
+          autoComplete='off'
+        />
+      </div>
+      {error && <p className='text-destructive mt-1 text-xs'>{error}</p>}
+      {open && (
+        <ul className='bg-background border-border absolute z-50 mt-1 w-full rounded-md border shadow-md'>
+          {results.map(r => (
+            <li
+              key={r.place_id}
+              onMouseDown={() => handleSelect(r.display_name)}
+              className='hover:bg-accent flex cursor-pointer items-start gap-2 px-3 py-2 text-sm'
+            >
+              <MapPinIcon className='text-muted-foreground mt-0.5 size-3.5 shrink-0' />
+              <span className='line-clamp-2'>{r.display_name}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+// ─── RadioGroup ───────────────────────────────────────────────────────────────
 
 type RadioGroupProps = {
   name: string
@@ -127,6 +293,8 @@ function RadioGroup({ name, value, onChange, options }: RadioGroupProps) {
   )
 }
 
+// ─── ContactForm ──────────────────────────────────────────────────────────────
+
 const ContactForm = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -144,7 +312,7 @@ const ContactForm = () => {
     if (!formData.email.trim()) newErrors.email = 'Bitte geben Sie Ihre E-Mail-Adresse ein.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = 'Bitte geben Sie eine gültige E-Mail-Adresse ein.'
-    if (!formData.phone.trim()) newErrors.phone = 'Bitte geben Sie Ihre Telefonnummer ein.'
+    if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Bitte geben Sie Ihre Telefonnummer ein.'
     if (!formData.eventDate) newErrors.eventDate = 'Bitte wählen Sie ein Datum.'
     if (!formData.eventLocation.trim()) newErrors.eventLocation = 'Bitte geben Sie den Veranstaltungsort an.'
     if (!formData.guestCount) newErrors.guestCount = 'Bitte geben Sie die Personenanzahl an.'
@@ -155,16 +323,15 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const newErrors = validate()
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors)
-      return
-    }
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return }
     setLoading(true)
-
     try {
       const body = new FormData()
+      // Combine phone code + number into single field for the API
+      body.append('phone', `${formData.phoneCode} ${formData.phoneNumber}`)
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && key !== 'file') body.append(key, String(value))
+        if (value !== null && key !== 'file' && key !== 'phoneCode' && key !== 'phoneNumber')
+          body.append(key, String(value))
       })
       if (formData.file) body.append('file', formData.file)
 
@@ -174,7 +341,6 @@ const ContactForm = () => {
         setErrors({ name: error ?? 'Senden fehlgeschlagen. Bitte versuchen Sie es erneut.' })
         return
       }
-
       setShowSuccess(true)
     } finally {
       setLoading(false)
@@ -194,17 +360,10 @@ const ContactForm = () => {
           </DialogHeader>
           <p className='text-muted-foreground mt-1 text-sm'>
             Vielen Dank, <strong>{formData.name}</strong>. Wir haben Ihre Anfrage erhalten und melden uns so schnell
-            wie möglich bei Ihnen unter{' '}
-            <strong>{formData.email}</strong>.
+            wie möglich bei Ihnen unter <strong>{formData.email}</strong>.
           </p>
           <div className='mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center'>
-            <Button
-              onClick={() => {
-                setShowSuccess(false)
-                setFormData(initialFormData)
-              }}
-              variant='outline'
-            >
+            <Button onClick={() => { setShowSuccess(false); setFormData(initialFormData) }} variant='outline'>
               Neue Anfrage senden
             </Button>
             <Button onClick={() => setShowSuccess(false)}>Schließen</Button>
@@ -215,9 +374,7 @@ const ContactForm = () => {
       <div className='mx-auto max-w-4xl px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='mx-auto mb-12 flex max-w-2xl flex-col items-center justify-center space-y-4 text-center sm:mb-16'>
-          <Badge variant='outline' className='text-sm font-normal'>
-            📋
-          </Badge>
+          <Badge variant='outline' className='text-sm font-normal'>📋</Badge>
           <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>Anfrage stellen</h2>
           <p className='text-muted-foreground text-xl'>
             Füllen Sie das Formular aus und wir erstellen Ihnen ein unverbindliches Angebot für Ihr Event.
@@ -225,7 +382,7 @@ const ContactForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} noValidate className='space-y-10'>
-          {/* 1 — Basics */}
+          {/* 01 — Kontaktdaten */}
           <div>
             <h3 className={sectionHeadingClass}>
               <span className='text-primary'>01</span> Kontaktdaten
@@ -260,21 +417,15 @@ const ContactForm = () => {
                   {errors.email && <p className='text-destructive mt-1 text-xs'>{errors.email}</p>}
                 </div>
               </div>
+
               <div className={gridTwoClass}>
-                <div>
-                  <label className={labelClass} htmlFor='phone'>
-                    Telefonnummer <span className='text-destructive'>*</span>
-                  </label>
-                  <Input
-                    id='phone'
-                    type='tel'
-                    placeholder='+49 123 456789'
-                    value={formData.phone}
-                    onChange={e => set('phone', e.target.value)}
-                    aria-invalid={!!errors.phone}
-                  />
-                  {errors.phone && <p className='text-destructive mt-1 text-xs'>{errors.phone}</p>}
-                </div>
+                <PhoneInput
+                  code={formData.phoneCode}
+                  number={formData.phoneNumber}
+                  onCodeChange={v => set('phoneCode', v)}
+                  onNumberChange={v => set('phoneNumber', v)}
+                  error={errors.phoneNumber}
+                />
                 <div>
                   <label className={labelClass} htmlFor='guestCount'>
                     Anzahl Personen <span className='text-destructive'>*</span>
@@ -291,6 +442,7 @@ const ContactForm = () => {
                   {errors.guestCount && <p className='text-destructive mt-1 text-xs'>{errors.guestCount}</p>}
                 </div>
               </div>
+
               <div className={gridTwoClass}>
                 <div>
                   <label className={labelClass} htmlFor='eventDate'>
@@ -299,34 +451,27 @@ const ContactForm = () => {
                   <input
                     id='eventDate'
                     type='date'
-                    className={cn(inputClass, errors.eventDate && 'border-destructive')}
+                    className={cn(
+                      'border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px]',
+                      errors.eventDate && 'border-destructive'
+                    )}
                     value={formData.eventDate}
                     onChange={e => set('eventDate', e.target.value)}
                   />
                   {errors.eventDate && <p className='text-destructive mt-1 text-xs'>{errors.eventDate}</p>}
                 </div>
-                <div>
-                  <label className={labelClass} htmlFor='eventLocation'>
-                    Ort der Veranstaltung <span className='text-destructive'>*</span>
-                  </label>
-                  <Input
-                    id='eventLocation'
-                    placeholder='z. B. Berlin Mitte'
-                    value={formData.eventLocation}
-                    onChange={e => set('eventLocation', e.target.value)}
-                    aria-invalid={!!errors.eventLocation}
-                  />
-                  {errors.eventLocation && (
-                    <p className='text-destructive mt-1 text-xs'>{errors.eventLocation}</p>
-                  )}
-                </div>
+                <AddressAutocomplete
+                  value={formData.eventLocation}
+                  onChange={v => set('eventLocation', v)}
+                  error={errors.eventLocation}
+                />
               </div>
             </div>
           </div>
 
           <div className='border-border border-t' />
 
-          {/* 2 — Event Details */}
+          {/* 02 — Event-Details */}
           <div>
             <h3 className={sectionHeadingClass}>
               <span className='text-primary'>02</span> Event-Details
@@ -334,66 +479,39 @@ const ContactForm = () => {
             <div className='space-y-4'>
               <div className={gridTwoClass}>
                 <div>
-                  <label className={labelClass} htmlFor='eventType'>
-                    Art der Veranstaltung
-                  </label>
-                  <select
-                    id='eventType'
-                    className={selectClass}
-                    value={formData.eventType}
-                    onChange={e => set('eventType', e.target.value)}
-                  >
+                  <label className={labelClass} htmlFor='eventType'>Art der Veranstaltung</label>
+                  <select id='eventType' className={selectClass} value={formData.eventType} onChange={e => set('eventType', e.target.value)}>
                     <option value=''>Bitte wählen…</option>
-                    <option value='Hochzeit'>Hochzeit</option>
-                    <option value='Geburtstag'>Geburtstag</option>
-                    <option value='Firmenfeier'>Firmenfeier</option>
-                    <option value='Festival'>Festival</option>
-                    <option value='Jubiläum'>Jubiläum</option>
-                    <option value='Sonstige'>Sonstige</option>
+                    <option>Hochzeit</option>
+                    <option>Geburtstag</option>
+                    <option>Firmenfeier</option>
+                    <option>Festival</option>
+                    <option>Jubiläum</option>
+                    <option>Sonstige</option>
                   </select>
                 </div>
                 <div>
-                  <label className={labelClass} htmlFor='eventDuration'>
-                    Dauer / Uhrzeit
-                  </label>
-                  <Input
-                    id='eventDuration'
-                    placeholder='z. B. 18:00 – 22:00 Uhr'
-                    value={formData.eventDuration}
-                    onChange={e => set('eventDuration', e.target.value)}
-                  />
+                  <label className={labelClass} htmlFor='eventDuration'>Dauer / Uhrzeit</label>
+                  <Input id='eventDuration' placeholder='z. B. 18:00 – 22:00 Uhr' value={formData.eventDuration} onChange={e => set('eventDuration', e.target.value)} />
                 </div>
               </div>
               <div className={gridTwoClass}>
                 <div>
-                  <label className={labelClass} htmlFor='menuPreference'>
-                    Gewünschtes Angebot
-                  </label>
-                  <select
-                    id='menuPreference'
-                    className={selectClass}
-                    value={formData.menuPreference}
-                    onChange={e => set('menuPreference', e.target.value)}
-                  >
+                  <label className={labelClass} htmlFor='menuPreference'>Gewünschtes Angebot</label>
+                  <select id='menuPreference' className={selectClass} value={formData.menuPreference} onChange={e => set('menuPreference', e.target.value)}>
                     <option value=''>Bitte wählen…</option>
-                    <option value='Burger-Menü'>Burger-Menü</option>
-                    <option value='Vegetarisch / Vegan'>Vegetarisch / Vegan</option>
-                    <option value='Gemischtes Menü'>Gemischtes Menü</option>
-                    <option value='Spezielles Menü'>Spezielles Menü</option>
-                    <option value='Noch offen'>Noch offen</option>
+                    <option>Burger-Menü</option>
+                    <option>Vegetarisch / Vegan</option>
+                    <option>Gemischtes Menü</option>
+                    <option>Spezielles Menü</option>
+                    <option>Noch offen</option>
                   </select>
                 </div>
                 <div>
                   <label className={labelClass} htmlFor='budget'>
-                    Budget{' '}
-                    <span className='text-muted-foreground font-normal'>(optional)</span>
+                    Budget <span className='text-muted-foreground font-normal'>(optional)</span>
                   </label>
-                  <Input
-                    id='budget'
-                    placeholder='z. B. 1.500 €'
-                    value={formData.budget}
-                    onChange={e => set('budget', e.target.value)}
-                  />
+                  <Input id='budget' placeholder='z. B. 1.500 CHF' value={formData.budget} onChange={e => set('budget', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -401,7 +519,7 @@ const ContactForm = () => {
 
           <div className='border-border border-t' />
 
-          {/* 3 — Logistik */}
+          {/* 03 — Logistik */}
           <div>
             <h3 className={sectionHeadingClass}>
               <span className='text-primary'>03</span> Logistik & Rahmenbedingungen
@@ -410,57 +528,25 @@ const ContactForm = () => {
               <div className={gridTwoClass}>
                 <div>
                   <p className={labelClass}>Stromanschluss vor Ort?</p>
-                  <RadioGroup
-                    name='powerSupply'
-                    value={formData.powerSupply}
-                    onChange={val => set('powerSupply', val)}
-                    options={[
-                      { label: 'Ja', value: 'Ja' },
-                      { label: 'Nein', value: 'Nein' },
-                      { label: 'Unbekannt', value: 'Unbekannt' }
-                    ]}
-                  />
+                  <RadioGroup name='powerSupply' value={formData.powerSupply} onChange={v => set('powerSupply', v)}
+                    options={[{ label: 'Ja', value: 'Ja' }, { label: 'Nein', value: 'Nein' }, { label: 'Unbekannt', value: 'Unbekannt' }]} />
                 </div>
                 <div>
                   <p className={labelClass}>Zufahrt für Foodtruck möglich?</p>
-                  <RadioGroup
-                    name='truckAccess'
-                    value={formData.truckAccess}
-                    onChange={val => set('truckAccess', val)}
-                    options={[
-                      { label: 'Ja', value: 'Ja' },
-                      { label: 'Nein', value: 'Nein' },
-                      { label: 'Unbekannt', value: 'Unbekannt' }
-                    ]}
-                  />
+                  <RadioGroup name='truckAccess' value={formData.truckAccess} onChange={v => set('truckAccess', v)}
+                    options={[{ label: 'Ja', value: 'Ja' }, { label: 'Nein', value: 'Nein' }, { label: 'Unbekannt', value: 'Unbekannt' }]} />
                 </div>
               </div>
               <div className={gridTwoClass}>
                 <div>
                   <p className={labelClass}>Indoor oder Outdoor?</p>
-                  <RadioGroup
-                    name='indoorOutdoor'
-                    value={formData.indoorOutdoor}
-                    onChange={val => set('indoorOutdoor', val)}
-                    options={[
-                      { label: 'Indoor', value: 'Indoor' },
-                      { label: 'Outdoor', value: 'Outdoor' },
-                      { label: 'Beides', value: 'Beides' }
-                    ]}
-                  />
+                  <RadioGroup name='indoorOutdoor' value={formData.indoorOutdoor} onChange={v => set('indoorOutdoor', v)}
+                    options={[{ label: 'Indoor', value: 'Indoor' }, { label: 'Outdoor', value: 'Outdoor' }, { label: 'Beides', value: 'Beides' }]} />
                 </div>
                 <div>
                   <p className={labelClass}>Parkmöglichkeiten vorhanden?</p>
-                  <RadioGroup
-                    name='parking'
-                    value={formData.parking}
-                    onChange={val => set('parking', val)}
-                    options={[
-                      { label: 'Ja', value: 'Ja' },
-                      { label: 'Nein', value: 'Nein' },
-                      { label: 'Unbekannt', value: 'Unbekannt' }
-                    ]}
-                  />
+                  <RadioGroup name='parking' value={formData.parking} onChange={v => set('parking', v)}
+                    options={[{ label: 'Ja', value: 'Ja' }, { label: 'Nein', value: 'Nein' }, { label: 'Unbekannt', value: 'Unbekannt' }]} />
                 </div>
               </div>
             </div>
@@ -468,13 +554,12 @@ const ContactForm = () => {
 
           <div className='border-border border-t' />
 
-          {/* 4 — Spezielle Wünsche */}
+          {/* 04 — Wünsche */}
           <div>
             <h3 className={sectionHeadingClass}>
               <span className='text-primary'>04</span> Weitere Informationen & Wünsche
             </h3>
             <textarea
-              id='notes'
               className={textareaClass}
               placeholder='z. B. Allergien, Motto der Feier, besondere Anforderungen …'
               value={formData.notes}
@@ -484,60 +569,45 @@ const ContactForm = () => {
 
           <div className='border-border border-t' />
 
-          {/* 5 — Optional */}
+          {/* 05 — Optional */}
           <div>
             <h3 className={sectionHeadingClass}>
               <span className='text-primary'>05</span> Optionale Angaben
             </h3>
-            <div className='space-y-4'>
-              <div className={gridTwoClass}>
-                <div>
-                  <label className={labelClass} htmlFor='file'>
-                    Datei-Upload{' '}
-                    <span className='text-muted-foreground font-normal'>(Lageplan, Details …)</span>
-                  </label>
-                  <input
-                    id='file'
-                    type='file'
-                    accept='.pdf,.jpg,.jpeg,.png,.webp'
-                    className='border-input bg-background text-muted-foreground file:text-foreground h-9 w-full cursor-pointer rounded-md border px-3 py-1 text-sm shadow-xs file:mr-3 file:border-0 file:bg-transparent file:text-sm file:font-medium'
-                    onChange={e => set('file', e.target.files?.[0] ?? null)}
-                  />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor='referralSource'>
-                    Wie haben Sie uns gefunden?
-                  </label>
-                  <select
-                    id='referralSource'
-                    className={selectClass}
-                    value={formData.referralSource}
-                    onChange={e => set('referralSource', e.target.value)}
-                  >
-                    <option value=''>Bitte wählen…</option>
-                    <option value='Google'>Google</option>
-                    <option value='Instagram'>Instagram</option>
-                    <option value='Facebook'>Facebook</option>
-                    <option value='Empfehlung'>Empfehlung</option>
-                    <option value='Flyer / Plakat'>Flyer / Plakat</option>
-                    <option value='Event gesehen'>Event gesehen</option>
-                    <option value='Sonstiges'>Sonstiges</option>
-                  </select>
-                </div>
+            <div className={gridTwoClass}>
+              <div>
+                <label className={labelClass} htmlFor='file'>
+                  Datei-Upload <span className='text-muted-foreground font-normal'>(Lageplan, Details …)</span>
+                </label>
+                <input
+                  id='file'
+                  type='file'
+                  accept='.pdf,.jpg,.jpeg,.png,.webp'
+                  className='border-input bg-background text-muted-foreground file:text-foreground h-9 w-full cursor-pointer rounded-md border px-3 py-1 text-sm shadow-xs file:mr-3 file:border-0 file:bg-transparent file:text-sm file:font-medium'
+                  onChange={e => set('file', e.target.files?.[0] ?? null)}
+                />
+              </div>
+              <div>
+                <label className={labelClass} htmlFor='referralSource'>Wie haben Sie uns gefunden?</label>
+                <select id='referralSource' className={selectClass} value={formData.referralSource} onChange={e => set('referralSource', e.target.value)}>
+                  <option value=''>Bitte wählen…</option>
+                  <option>Google</option>
+                  <option>Instagram</option>
+                  <option>Facebook</option>
+                  <option>Empfehlung</option>
+                  <option>Flyer / Plakat</option>
+                  <option>Event gesehen</option>
+                  <option>Sonstiges</option>
+                </select>
               </div>
             </div>
           </div>
 
           <div className='border-border border-t' />
 
-          {/* 6 — Datenschutz */}
+          {/* 06 — Datenschutz */}
           <div className='space-y-3'>
-            <label
-              className={cn(
-                'flex cursor-pointer items-start gap-3',
-                errors.privacyAccepted && 'text-destructive'
-              )}
-            >
+            <label className={cn('flex cursor-pointer items-start gap-3', errors.privacyAccepted && 'text-destructive')}>
               <input
                 type='checkbox'
                 className='accent-primary mt-0.5 size-4 shrink-0 cursor-pointer'
@@ -548,7 +618,7 @@ const ContactForm = () => {
                 Ich stimme der{' '}
                 <DatenschutzDialog
                   trigger={
-                    <button type='button' className='text-primary underline underline-offset-2 cursor-pointer'>
+                    <button type='button' className='text-primary cursor-pointer underline underline-offset-2'>
                       Datenschutzerklärung
                     </button>
                   }
@@ -556,9 +626,7 @@ const ContactForm = () => {
                 zu. <span className='text-destructive'>*</span>
               </span>
             </label>
-            {errors.privacyAccepted && (
-              <p className='text-destructive text-xs'>{errors.privacyAccepted}</p>
-            )}
+            {errors.privacyAccepted && <p className='text-destructive text-xs'>{errors.privacyAccepted}</p>}
 
             <label className='flex cursor-pointer items-start gap-3'>
               <input

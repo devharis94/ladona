@@ -113,6 +113,20 @@ export async function POST(request: Request) {
     })
   }
 
+  // Log env config (redact password)
+  console.log('[contact] ENV check:', {
+    SMTP_HOST: process.env.SMTP_HOST || '⚠️  not set',
+    SMTP_PORT: process.env.SMTP_PORT || '⚠️  not set',
+    SMTP_SECURE: process.env.SMTP_SECURE || '⚠️  not set',
+    SMTP_USER: process.env.SMTP_USER || '⚠️  not set',
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD ? '✓ set' : '⚠️  not set',
+    SMTP_FROM: process.env.SMTP_FROM || '⚠️  not set',
+    CONTACT_EMAIL: process.env.CONTACT_EMAIL || '⚠️  not set',
+  })
+  console.log('[contact] Sending from:', `"La Doña Anfragen" <${process.env.SMTP_FROM}>`)
+  console.log('[contact] Sending to:', process.env.CONTACT_EMAIL)
+  console.log('[contact] Reply-to:', fields.email)
+
   const transporter = createTransporter()
 
   // Verify SMTP connection before attempting to send
