@@ -37,7 +37,6 @@ const Home = () => {
       <PopularDishes popularDishes={popularDishes} />
       <AboutUs stats={stats} />
       <Testimonials testimonials={testimonials} />
-      <NewItems newItems={newItems} />
       <ContactUs contactInfo={contactInfo} />
       <ContactForm />
       {/* Add JSON-LD to your page */}
