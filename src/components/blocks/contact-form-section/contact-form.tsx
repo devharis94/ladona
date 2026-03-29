@@ -37,7 +37,29 @@ type FormData = {
   newsletterOptIn: boolean
 }
 
-const initialFormData: FormData = {
+const emptyFormData: FormData = {
+  name: '',
+  email: '',
+  phone: '',
+  eventDate: '',
+  eventLocation: '',
+  guestCount: '',
+  eventType: '',
+  eventDuration: '',
+  menuPreference: '',
+  budget: '',
+  powerSupply: '',
+  truckAccess: '',
+  indoorOutdoor: '',
+  parking: '',
+  notes: '',
+  file: null,
+  referralSource: '',
+  privacyAccepted: false,
+  newsletterOptIn: false
+}
+
+const demoFormData: FormData = {
   name: 'Haris Bjelic',
   email: 'haris.bjelic@outlook.com',
   phone: '+41 79 123 45 67',
@@ -58,6 +80,8 @@ const initialFormData: FormData = {
   privacyAccepted: false,
   newsletterOptIn: true
 }
+
+const initialFormData = process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ? demoFormData : emptyFormData
 
 const labelClass = 'block text-sm font-medium mb-1.5'
 const inputClass =
