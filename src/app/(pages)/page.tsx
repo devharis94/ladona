@@ -1,4 +1,4 @@
-import HeroSection from '@/components/shadcn-studio/blocks/hero-section-01/hero-section-01'
+import HeroSection from '@/components/blocks/hero-section/hero-section'
 import PopularDishes from '@/components/blocks/popular-dishes/popular-dishes'
 import AboutUs from '@/components/blocks/about-us-section/about-us-page'
 import Testimonials from '@/components/blocks/testimonials-section/testimonials-section'
