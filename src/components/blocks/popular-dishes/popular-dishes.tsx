@@ -30,8 +30,8 @@ const PopularDishes = ({ popularDishes }: { popularDishes: PopularDish }) => {
               className='hover:border-primary overflow-hidden rounded-none py-0 shadow-none transition-colors duration-300'
             >
               <CardContent className='px-0'>
-                <div className='bg-muted'>
-                  <img src={member.image} alt={member.alt} className='h-auto w-full' />
+                <div className='bg-muted overflow-hidden'>
+                  <img src={member.image} alt={member.alt} className='h-auto w-full transition-transform duration-500 hover:scale-110' />
                 </div>
                 <div className='space-y-3 px-6 py-5'>
                   <CardTitle className='text-lg'>{member.name}</CardTitle>

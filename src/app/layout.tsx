@@ -33,8 +33,8 @@ const kaushanScript = Kaushan_Script({
 
 export const metadata: Metadata = {
   title: {
-    template: 'Demo: %s - Bistro | Shadcn Studio',
-    default: 'Demo: Bistro - Restaurant Landing Page | Shadcn Studio'
+    template: 'Ladona',
+    default: 'Ladona'
   },
   description:
     'Enjoy fresh ingredients, thoughtfully prepared meals, and a welcoming space designed for memorable moments. Experience bistro dining made simple and delicious.',

@@ -1,10 +1,12 @@
-import HeroSectionPage from '@/components/blocks/hero-section/hero-section'
+import HeroSection from '@/components/shadcn-studio/blocks/hero-section-01/hero-section-01'
 import PopularDishes from '@/components/blocks/popular-dishes/popular-dishes'
 import AboutUs from '@/components/blocks/about-us-section/about-us-page'
 import Testimonials from '@/components/blocks/testimonials-section/testimonials-section'
 import NewItems from '@/components/blocks/new-items-section/new-items'
 import ContactUs from '@/components/blocks/contact-us-section/contact-us-page'
 import ContactForm from '@/components/blocks/contact-form-section/contact-form'
+import Gallery from '@/components/shadcn-studio/blocks/gallery-component-07/gallery-component-07'
+
 
 import { menudata } from '@/assets/data/hero'
 import { popularDishes } from '@/assets/data/popular-dishes'
@@ -12,7 +14,7 @@ import { stats } from '@/assets/data/about-us'
 import { testimonials } from '@/assets/data/testimonials'
 import { newItems } from '@/assets/data/new-items'
 import { contactInfo } from '@/assets/data/contact-us'
-import { GalleryImage } from '@/assets/data/offers'
+import { galleryImages } from '@/assets/data/offers'
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -33,7 +35,8 @@ const jsonLd = {
 const Home = () => {
   return (
     <>
-      <HeroSectionPage menudata={menudata} />
+
+      <HeroSection menudata={menudata} />
       <PopularDishes popularDishes={popularDishes} />
       <AboutUs stats={stats} />
       <Testimonials testimonials={testimonials} />

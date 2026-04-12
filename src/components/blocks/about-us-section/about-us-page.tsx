@@ -31,7 +31,7 @@ const AboutUs = ({ stats }: { stats: Stat[] }) => {
 
         {/* Video player and stats */}
         <div className='relative mb-8 h-full w-full sm:mb-16 lg:mb-24'>
-          <img src='/images/foodtruck.jpg' alt='About us illustration' className='h-full w-full object-cover' />
+          <img src='/images/food-table.jpg' alt='About us illustration' className='h-full w-full object-cover' />
 
           {/* Stats card overlapping the video section */}
           <div className='bg-background grid gap-10 border p-8 sm:max-lg:grid-cols-2 lg:absolute lg:-bottom-25 lg:left-1/2 lg:w-3/4 lg:-translate-x-1/2 lg:grid-cols-4 lg:px-10'>

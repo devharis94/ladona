@@ -1,3 +1,30 @@
+export const galleryImages: string[] = [
+  '/images/gallery/DSC02578.jpg',
+  '/images/gallery/DSC02582.jpg',
+  '/images/gallery/DSC02584.jpg',
+  '/images/gallery/DSC02589.jpg',
+  '/images/gallery/DSC02614.jpg',
+  '/images/gallery/DSC02625.jpg',
+  '/images/gallery/DSC02628.jpg',
+  '/images/gallery/DSC02631.jpg',
+  '/images/gallery/DSC02634.jpg',
+
+  '/images/gallery/DSC02721.jpg',
+  '/images/gallery/DSC02727.jpg',
+  '/images/gallery/DSC02733.jpg',
+  '/images/gallery/DSC02735.jpg',
+  '/images/gallery/DSC02736.jpg',
+  '/images/gallery/DSC02743.jpg',
+  '/images/gallery/DSC02766.jpg',
+  '/images/gallery/DSC02770.jpg',
+  '/images/gallery/DSC02772.jpg',
+  '/images/gallery/DSC02774.jpg',
+  '/images/gallery/DSC02784.jpg',
+  '/images/gallery/DSC02785.jpg',
+  '/images/gallery/DSC02788.jpg',
+  '/images/gallery/DSC02790.jpg',
+]
+
 export const GalleryImage = [
   {
     src: '/images/offers/offers-image-01.webp',
